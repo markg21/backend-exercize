@@ -9,6 +9,10 @@ namespace BackendExercize.Database
 {
     public class DatabaseAccess
     {
+        public static string DefaultConnection = "Server=localhost; Port=5432; User Id=postgres; Password=password; Database=twitter;";
+
+        private NpgsqlConnection database;
+
         #region Sigleton
 
         public static DatabaseAccess Instance { get; }
@@ -25,13 +29,26 @@ namespace BackendExercize.Database
 
         #endregion
 
-        private NpgsqlConnection database;
-
-        public List<Tweet> ReadTweets()
+        public void ExecuteNonQuery(string query)
         {
-            var tweets = new List<Tweet>();
+            var con = new NpgsqlConnection(DefaultConnection);
+            con.Open();
 
-            return tweets;
+            var cmd = new NpgsqlCommand(query, con);
+            cmd.ExecuteNonQuery();
+
+            con.Close();
+        }
+
+        public (NpgsqlDataReader reader, NpgsqlConnection connection) ExecuteQuery(string query)
+        {
+            var con = new NpgsqlConnection(DefaultConnection);
+            con.Open();
+
+            var cmd = new NpgsqlCommand(query, con);
+            var res = cmd.ExecuteReader();
+
+            return (res, con);
         }
     }
 }

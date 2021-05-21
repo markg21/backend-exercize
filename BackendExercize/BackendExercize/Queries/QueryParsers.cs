@@ -21,5 +21,17 @@ namespace BackendExercize.Queries
                 LikeCount = (long)tweet[4]
             };
         }
+
+        public static Retweet ParseRetweet(this NpgsqlDataReader retweet)
+        {
+            return new Retweet
+            {
+                Content = retweet[0].ToString().Trim(),
+                TweetId = (int)retweet[1],
+                RetweetUser = retweet[2].ToString().Trim(),
+                TweetUser = retweet[3].ToString().Trim(),
+                Timestamp = DateTime.ParseExact(retweet[4].ToString(), "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture)
+            };
+        }
     }
 }

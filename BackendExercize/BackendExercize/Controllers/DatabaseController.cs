@@ -1,4 +1,5 @@
-﻿using BackendExercize.Models;
+﻿using BackendExercize.Database;
+using BackendExercize.Models;
 using BackendExercize.Queries;
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
@@ -13,34 +14,18 @@ namespace BackendExercize.Controllers
     [Route("api/[controller]")]
     public class DatabaseController : Controller
     {
+        public static DatabaseAccess Database = DatabaseAccess.Instance;
+
         public IActionResult Index()
         {
             return View();
         }
 
-        [HttpGet]
-        public object Get()
-        {
-            var con = new NpgsqlConnection("Server=localhost; Port=5432; User Id=postgres; Password=password; Database=twitter;");
-            con.Open();
-
-            var cmd = new NpgsqlCommand(SqlQueries.Tweet, con);
-            var res = cmd.ExecuteReader();
-
-            res.Read();
-
-            return res.ParseTweet();
-        }
-
         [HttpGet("[action]")]
         [ActionName("tweets")]
-        public List<Tweet> GetTweets([FromBody] TweetPost tweet)
+        public List<Tweet> GetTweets()
         {
-            var con = new NpgsqlConnection("Server=localhost; Port=5432; User Id=postgres; Password=password; Database=twitter;");
-            con.Open();
-
-            var cmd = new NpgsqlCommand(SqlQueries.Tweet, con);
-            var res = cmd.ExecuteReader();
+            var (res, connection) = Database.ExecuteQuery(SqlQueries.Tweets);
 
             var tweets = new List<Tweet>();
 
@@ -49,18 +34,34 @@ namespace BackendExercize.Controllers
                 tweets.Add(res.ParseTweet());
             }
 
+            connection.Close();
+
             return tweets;
+        }
+
+        [HttpGet("[action]")]
+        [ActionName("retweets")]
+        public List<Retweet> GetRetweets()
+        {
+            var (res, connection) = Database.ExecuteQuery(SqlQueries.Retweets);
+
+            var retweets = new List<Retweet>();
+
+            while (res.Read())
+            {
+                retweets.Add(res.ParseRetweet());
+            }
+
+            connection.Close();
+
+            return retweets;
         }
 
         [HttpGet("[action]/{id}")]
         [ActionName("tweet")]
         public List<Tweet> GetTweetById(long id)
         {
-            var con = new NpgsqlConnection("Server=localhost; Port=5432; User Id=postgres; Password=password; Database=twitter;");
-            con.Open();
-
-            var cmd = new NpgsqlCommand(SqlQueries.TweetById(id), con);
-            var res = cmd.ExecuteReader();
+            var (res, connection) = Database.ExecuteQuery(SqlQueries.TweetById(id));
 
             var tweets = new List<Tweet>();
 
@@ -69,18 +70,30 @@ namespace BackendExercize.Controllers
                 tweets.Add(res.ParseTweet());
             }
 
+            connection.Close();
+
             return tweets;
+        }
+
+        [HttpPost("[action]/{id}/like")]
+        [ActionName("tweet")]
+        public void LikeTweet(long id, [FromBody] string username)
+        {
+            Database.ExecuteNonQuery(SqlQueries.LikeTweet(username, id));
+        }
+
+        [HttpPost("[action]/{id}/retweet")]
+        [ActionName("tweet")]
+        public void Retweet(long id, [FromBody] string username)
+        {
+            Database.ExecuteNonQuery(SqlQueries.PostRetweet(username, id));
         }
 
         [HttpPost("[action]")]
         [ActionName("tweet")]
         public void PostTweet([FromBody] TweetPost tweet)
         {
-            var con = new NpgsqlConnection("Server=localhost; Port=5432; User Id=postgres; Password=password; Database=twitter;");
-            con.Open();
-
-            var cmd = new NpgsqlCommand(SqlQueries.InsertTweet(tweet.Content, tweet.Username), con);
-            cmd.ExecuteNonQuery();
+            Database.ExecuteNonQuery(SqlQueries.InsertTweet(tweet.Content, tweet.Username));
         }
     }
 }
