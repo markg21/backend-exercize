@@ -15,6 +15,7 @@ namespace BackendExercize.Controllers
     public class DatabaseController : Controller
     {
         public static DatabaseAccess Database = DatabaseAccess.Instance;
+        public static Config config = new();
 
         [HttpGet("[action]")]
         [ActionName("tweets")]

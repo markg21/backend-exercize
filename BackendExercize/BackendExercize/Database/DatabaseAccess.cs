@@ -9,7 +9,7 @@ namespace BackendExercize.Database
 {
     public class DatabaseAccess
     {
-        public static string DefaultConnection = "Server=localhost; Port=5432; User Id=postgres; Password=password; Database=twitter;";
+        public static Config config = new();
 
         #region Sigleton
 
@@ -28,7 +28,7 @@ namespace BackendExercize.Database
 
         public void ExecuteNonQuery(string query)
         {
-            var con = new NpgsqlConnection(DefaultConnection);
+            var con = new NpgsqlConnection(config.Connection);
             con.Open();
 
             var cmd = new NpgsqlCommand(query, con);
@@ -47,7 +47,7 @@ namespace BackendExercize.Database
         public (NpgsqlDataReader reader, NpgsqlConnection connection) ExecuteQuery(string query)
         {
 
-            var con = new NpgsqlConnection(DefaultConnection);
+            var con = new NpgsqlConnection(config.Connection);
             con.Open();
 
             var cmd = new NpgsqlCommand(query, con);
