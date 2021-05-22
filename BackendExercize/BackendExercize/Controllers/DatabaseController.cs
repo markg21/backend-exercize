@@ -16,11 +16,6 @@ namespace BackendExercize.Controllers
     {
         public static DatabaseAccess Database = DatabaseAccess.Instance;
 
-        public IActionResult Index()
-        {
-            return View();
-        }
-
         [HttpGet("[action]")]
         [ActionName("tweets")]
         public List<Tweet> GetTweets()

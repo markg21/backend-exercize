@@ -16,7 +16,7 @@ namespace BackendExercize.Queries
             {
                 Text = tweet[0].ToString().Trim(),
                 Username = tweet[1].ToString().Trim(),
-                Timestamp = DateTime.ParseExact(tweet[2].ToString(), "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture),
+                Timestamp = DateTime.ParseExact(tweet[2].ToString(), "MM/dd/yyyy HH:mm:ss", CultureInfo.InvariantCulture),
                 RetweetCount = (long)tweet[3],
                 LikeCount = (long)tweet[4]
             };
@@ -30,7 +30,7 @@ namespace BackendExercize.Queries
                 TweetId = (int)retweet[1],
                 RetweetUser = retweet[2].ToString().Trim(),
                 TweetUser = retweet[3].ToString().Trim(),
-                Timestamp = DateTime.ParseExact(retweet[4].ToString(), "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture)
+                Timestamp = DateTime.ParseExact(retweet[4].ToString(), "MM/dd/yyyy HH:mm:ss", CultureInfo.InvariantCulture)
             };
         }
     }

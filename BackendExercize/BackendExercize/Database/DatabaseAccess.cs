@@ -11,15 +11,12 @@ namespace BackendExercize.Database
     {
         public static string DefaultConnection = "Server=localhost; Port=5432; User Id=postgres; Password=password; Database=twitter;";
 
-        private NpgsqlConnection database;
-
         #region Sigleton
 
         public static DatabaseAccess Instance { get; }
 
         private DatabaseAccess()
         {
-            database = new();
         }
 
         static DatabaseAccess()
@@ -40,8 +37,16 @@ namespace BackendExercize.Database
             con.Close();
         }
 
+        /// <summary>
+        /// Executes query and return the result and the connection.
+        /// It's important to return the connection because if I close the
+        /// connection before the reading is done it will throw an exception.
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
         public (NpgsqlDataReader reader, NpgsqlConnection connection) ExecuteQuery(string query)
         {
+
             var con = new NpgsqlConnection(DefaultConnection);
             con.Open();
 
